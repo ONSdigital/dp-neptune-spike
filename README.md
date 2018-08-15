@@ -1,4 +1,4 @@
-#Neptune Spike
+# Neptune Spike
 Useful notes on getting started including links to tutorials.
 
 ### Gremlin getting started
