@@ -1,7 +1,7 @@
 package com.github.onsdigital.neptune;
 
-import com.github.onsdigital.neptune.gremlin.AbstractCommand;
 import com.github.onsdigital.neptune.gremlin.DropGraph;
+import com.github.onsdigital.neptune.gremlin.GremlinTask;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -10,7 +10,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import static com.github.onsdigital.neptune.logging.LogBuilder.logBuilder;
-
 
 /**
  * Hello world!
@@ -34,8 +33,6 @@ public class App {
         CommandLineParser parser = new DefaultParser();
         CommandLine line = parser.parse(options, args);
 
-        AbstractCommand cmd = null;
-
         if (line.hasOption("help")) {
             printCliHelp(options);
             System.exit(0);
@@ -43,10 +40,13 @@ public class App {
 
         if (line.hasOption("drop")) {
             String[] opts = line.getOptionValues("drop");
-            cmd = new DropGraph(opts[0], Integer.parseInt(opts[1]));
-        }
+            String host = opts[0];
+            int port = Integer.parseInt(opts[1]);
 
-        cmd.connectAndExecute();
+            try (GremlinTask cmd = new DropGraph(host, port)) {
+                cmd.connectAndExecute();
+            }
+        }
     }
 
     private static void printCliHelp(Options options) {

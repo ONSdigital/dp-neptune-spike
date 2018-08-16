@@ -10,13 +10,13 @@ import java.io.IOException;
 
 import static com.github.onsdigital.neptune.logging.LogBuilder.logBuilder;
 
-public abstract class AbstractCommand implements Closeable {
+public abstract class GremlinTask implements Closeable {
 
     protected Cluster cluster;
     protected String neptuneHost;
     protected int neptunePort;
 
-    public AbstractCommand(String neptuneHost, int neptunePort) {
+    public GremlinTask(String neptuneHost, int neptunePort) {
         this.cluster = Cluster.build()
                 .addContactPoint(neptuneHost)
                 .port(neptunePort)

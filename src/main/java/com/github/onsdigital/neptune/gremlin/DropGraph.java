@@ -4,7 +4,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 
 import static com.github.onsdigital.neptune.logging.LogBuilder.logBuilder;
 
-public class DropGraph extends AbstractCommand {
+public class DropGraph extends GremlinTask {
 
     public DropGraph(String neptuneHost, int neptunePort) {
         super(neptuneHost, neptunePort);
@@ -13,7 +13,7 @@ public class DropGraph extends AbstractCommand {
     @Override
     public void executeTask(GraphTraversalSource g) {
         logBuilder().info("dropping graph vertices...");
-        g.V().drop();
+        g.V().drop().iterate();
         logBuilder().info("drop graph vertices complete");
     }
 
