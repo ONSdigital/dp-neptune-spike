@@ -38,4 +38,14 @@ public class LogBuilder extends LogMessageBuilder {
         addMessage(message).log();
     }
 
+    public void warn(String message) {
+        logLevel = Level.WARN;
+        description = message;
+        log();
+    }
+
+    @Override
+    public LogBuilder addParameter(String key, Object value) {
+        return (LogBuilder) super.addParameter(key, value);
+    }
 }
