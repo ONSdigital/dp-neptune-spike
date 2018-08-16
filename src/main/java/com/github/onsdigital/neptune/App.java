@@ -42,7 +42,7 @@ public class App {
         }
 
         if (line.hasOption("drop")) {
-            String[] opts = line.getOptionValues("clean");
+            String[] opts = line.getOptionValues("drop");
             cmd = new DropGraph(opts[0], Integer.parseInt(opts[1]));
         }
 
