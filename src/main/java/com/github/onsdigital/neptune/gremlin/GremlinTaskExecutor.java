@@ -27,6 +27,10 @@ public class GremlinTaskExecutor implements Closeable {
     }
 
     public void execGremlinTask(GremlinTask task) {
+        logBuilder().addParameter("host", neptuneHost)
+                .addParameter("port", neptunePort)
+                .info("connection configuration");
+
         try (GraphTraversalSource g = EmptyGraph.instance()
                 .traversal()
                 .withRemote(DriverRemoteConnection
