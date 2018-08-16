@@ -10,6 +10,9 @@ import static com.github.onsdigital.neptune.logging.LogBuilder.logBuilder;
 
 public class GremlinExample {
 
+    private static final String ID1 = "CustomID1";
+    private static final String ID2 = "CustomID2";
+
     private String neptuneHost;
     private int neptunePort;
 
@@ -38,23 +41,22 @@ public class GremlinExample {
 
             logBuilder().info("adding Custom Label 1");
             g.addV("Custom Label")
-                    .property(T.id, "CustomId1")
+                    .property(T.id, ID1)
                     .property("name", "Custom id vertex 1")
                     .next();
 
             logBuilder().info("adding Custom Label 2");
             g.addV("Custom Label")
-                    .property(T.id, "CustomId2")
+                    .property(T.id, ID2)
                     .property("name", "Custom id vertex 2")
                     .next();
 
             g.addE("Edge Label")
-                    .from(g.V("Custom3Id1"))
-                    .to(g.V("CustomLabel2"))
+                    .from(g.V(ID1))
+                    .to(g.V(ID2))
                     .next();
 
-            g.V().limit(3)
-                    .valueMap()
+            g.V().valueMap()
                     .forEachRemaining(e -> System.out.println(e));
 
             logBuilder().info("example completed successfully");
