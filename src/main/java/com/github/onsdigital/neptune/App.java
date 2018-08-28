@@ -1,6 +1,7 @@
 package com.github.onsdigital.neptune;
 
 import com.github.onsdigital.neptune.gremlin.Config;
+import com.github.onsdigital.neptune.gremlin.DropGraph;
 import com.github.onsdigital.neptune.gremlin.GremlinTask;
 import com.github.onsdigital.neptune.gremlin.GremlinTaskExecutor;
 import com.github.onsdigital.neptune.gremlin.PopulateExample;
@@ -38,12 +39,7 @@ public class App {
             task = new PopulateExample();
         } else if (cli.getLine().hasOption(DROP)) {
             config = new Config(cli.getLine().getOptionValues(DROP));
-            task = new PopulateExample();
-        } else if (cli.getLine().hasOption(EXAMPLE)) {
-            logBuilder().info("running aws example");
-            config = new Config(cli.getLine().getOptionValues(EXAMPLE));
-            example(config);
-            System.exit(0);
+            task = new DropGraph();
         }
 
         if (null == task) {
