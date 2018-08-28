@@ -30,6 +30,13 @@ public class Cli {
                 .argName("host> <port")
                 .build());
 
+        options.addOption(Option.builder("example")
+                .desc("run the aws example")
+                .hasArgs()
+                .numberOfArgs(2)
+                .argName("host> <port")
+                .build());
+
         this.line = new DefaultParser().parse(options, args);
     }
 
