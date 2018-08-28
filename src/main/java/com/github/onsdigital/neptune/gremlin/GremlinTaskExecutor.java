@@ -15,15 +15,21 @@ public class GremlinTaskExecutor implements Closeable {
     protected Cluster cluster;
     protected String neptuneHost;
     protected int neptunePort;
+    protected GraphTraversalSource g;
 
     public GremlinTaskExecutor(Config config) {
+        this.neptuneHost = config.getHost();
+        this.neptunePort = config.getPort();
+
         this.cluster = Cluster.build()
                 .addContactPoint(neptuneHost)
                 .port(neptunePort)
                 .create();
 
-        this.neptuneHost = config.getHost();
-        this.neptunePort = config.getPort();
+        this.g = EmptyGraph.instance()
+                .traversal()
+                .withRemote(DriverRemoteConnection
+                        .using(cluster));
     }
 
     public void execGremlinTask(GremlinTask task) {
@@ -31,10 +37,7 @@ public class GremlinTaskExecutor implements Closeable {
                 .addParameter("port", neptunePort)
                 .info("connection configuration");
 
-        try (GraphTraversalSource g = EmptyGraph.instance()
-                .traversal()
-                .withRemote(DriverRemoteConnection
-                        .using(cluster))) {
+        try {
             task.execute(g);
         } catch (Exception e) {
             logBuilder().error(e, "execGremlinTask something went wrong");
@@ -43,6 +46,13 @@ public class GremlinTaskExecutor implements Closeable {
 
     @Override
     public void close() throws IOException {
+        logBuilder().info("attempting to close graph traversal");
+        try {
+            this.g.close();
+        } catch (Exception e) {
+            logBuilder().error(e, "error closing graph traversal");
+        }
+
         logBuilder().info("closing Neptine cluster");
         cluster.close();
     }
