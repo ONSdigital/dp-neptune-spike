@@ -30,8 +30,8 @@ public class Cli {
                 .argName("host> <port")
                 .build());
 
-        options.addOption(Option.builder("example")
-                .desc("run the aws example")
+        options.addOption(Option.builder("codelist")
+                .desc("run the codelist script")
                 .hasArgs()
                 .numberOfArgs(2)
                 .argName("host> <port")

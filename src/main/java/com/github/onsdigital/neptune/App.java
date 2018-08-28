@@ -1,5 +1,6 @@
 package com.github.onsdigital.neptune;
 
+import com.github.onsdigital.neptune.gremlin.CodeList;
 import com.github.onsdigital.neptune.gremlin.Config;
 import com.github.onsdigital.neptune.gremlin.DropGraph;
 import com.github.onsdigital.neptune.gremlin.GremlinTask;
@@ -24,7 +25,7 @@ public class App {
     static final String HELP = "help";
     static final String DROP = "drop";
     static final String IMPORT = "import";
-    static final String EXAMPLE = "example";
+    static final String CODE_LIST = "codelist";
 
     public static void main(String[] args) throws Exception {
         Cli cli = new Cli(args);
@@ -40,6 +41,9 @@ public class App {
         } else if (cli.getLine().hasOption(DROP)) {
             config = new Config(cli.getLine().getOptionValues(DROP));
             task = new DropGraph();
+        } else if (cli.getLine().hasOption(CODE_LIST)) {
+            config = new Config(cli.getLine().getOptionValues(CODE_LIST));
+            task = new CodeList();
         }
 
         if (null == task) {

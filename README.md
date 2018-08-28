@@ -14,3 +14,11 @@ Example of how to set up the gremlin console to point to a remote server:
 ### Java Gremlin example
 Getting started example of using the java library
 > https://docs.aws.amazon.com/neptune/latest/userguide/access-graph-gremlin-java.html
+
+Some AWS specific Gremlin implementation notes:
+> https://docs.aws.amazon.com/neptune/latest/userguide/access-graph-gremlin-differences.html
+
+###
+```:remote connect tinkerpop.server conf/neptune-remote.yam```
+
+```:remote console```
