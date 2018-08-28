@@ -37,12 +37,13 @@ public class GremlinTaskExecutor implements Closeable {
                         .using(cluster))) {
             task.execute(g);
         } catch (Exception e) {
-            logBuilder().error(e, "something went wrong");
+            logBuilder().error(e, "execGremlinTask something went wrong");
         }
     }
 
     @Override
     public void close() throws IOException {
+        logBuilder().info("closing Neptine cluster");
         cluster.close();
     }
 }
