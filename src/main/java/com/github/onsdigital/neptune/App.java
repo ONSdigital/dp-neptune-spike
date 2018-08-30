@@ -1,19 +1,14 @@
 package com.github.onsdigital.neptune;
 
-import com.github.onsdigital.neptune.gremlin.CodeList;
-import com.github.onsdigital.neptune.gremlin.Config;
-import com.github.onsdigital.neptune.gremlin.DropGraph;
-import com.github.onsdigital.neptune.gremlin.GremlinTask;
-import com.github.onsdigital.neptune.gremlin.GremlinTaskExecutor;
-import com.github.onsdigital.neptune.gremlin.PopulateExample;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tinkerpop.gremlin.driver.Client;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
-import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
-import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
+import org.apache.tinkerpop.gremlin.driver.Result;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static com.github.onsdigital.neptune.logging.LogBuilder.logBuilder;
 
@@ -23,68 +18,65 @@ import static com.github.onsdigital.neptune.logging.LogBuilder.logBuilder;
 public class App {
 
     static final String HELP = "help";
-    static final String DROP = "drop";
-    static final String IMPORT = "import";
-    static final String CODE_LIST = "codelist";
+    static final String QUERY = "query";
+    static final String PROMPT = "grem-query> ";
+
+    static Cluster cluster;
+    static Client gremCli;
 
     public static void main(String[] args) throws Exception {
         Cli cli = new Cli(args);
 
-        GremlinTask task = null;
-        Config config = null;
-
         if (cli.getLine().hasOption(HELP)) {
             cli.displayHelpAndExit();
-        } else if (cli.getLine().hasOption(IMPORT)) {
-            config = new Config(cli.getLine().getOptionValues(IMPORT));
-            task = new PopulateExample();
-        } else if (cli.getLine().hasOption(DROP)) {
-            config = new Config(cli.getLine().getOptionValues(DROP));
-            task = new DropGraph();
-        } else if (cli.getLine().hasOption(CODE_LIST)) {
-            config = new Config(cli.getLine().getOptionValues(CODE_LIST));
-            task = new CodeList();
         }
 
-        if (null == task) {
-            cli.displayHelpAndExit();
+        if (cli.getLine().hasOption(QUERY)) {
+            cluster = Cluster.build()
+                    .addContactPoint("localhost")
+                    .port(8182)
+                    .create();
+            gremCli = cluster.connect();
+
+            scanForInput();
+            System.exit(0);
         }
 
-        executeGremlinTask(task, config);
+        cli.displayHelpAndExit();
     }
 
-    private static void executeGremlinTask(GremlinTask task, Config config) throws IOException {
-        try (GremlinTaskExecutor executor = new GremlinTaskExecutor(config)) {
-            executor.execGremlinTask(task);
-        } catch (Exception e) {
-            logBuilder().error(e, "execute Gremlin task failure.");
+    private static void scanForInput() throws ExecutionException, InterruptedException {
+        Scanner sc = new Scanner(System.in);
+        boolean exit = false;
+
+        while (!exit) {
+            System.out.print(PROMPT);
+            String line = sc.nextLine();
+
+            if (line.equalsIgnoreCase("exit")) {
+                closeAndExit();
+                exit = true;
+            } else if (StringUtils.isNoneEmpty(line)) {
+                try {
+                    execQuery(line);
+                } catch (Exception e) {
+                    logBuilder().error(e, "error happened");
+                    exit = true;
+                    closeAndExit();
+                }
+            }
         }
     }
 
-    public static void example(Config cfg) {
-        Cluster.Builder builder = Cluster.build();
-        builder.addContactPoint(cfg.getHost());
-        builder.port(cfg.getPort());
+    private static void execQuery(String query) throws ExecutionException, InterruptedException {
+        CompletableFuture<List<Result>> r = gremCli.submit(query).all();
+        r.get().stream().forEach(item -> System.out.println("> " + item.getString()));
+    }
 
-        Cluster cluster = builder.create();
-
-        GraphTraversalSource g = EmptyGraph.instance().traversal().withRemote(DriverRemoteConnection.using(cluster));
-
-        g.addV("Person").property("Name", "Justin").next();
-
-        // Add a vertex with a user-supplied ID.
-        g.addV("Custom Label").property(T.id, "CustomId1").property("name", "Custom id vertex 1").next();
-        g.addV("Custom Label").property(T.id, "CustomId2").property("name", "Custom id vertex 2").next();
-
-        g.addE("Edge Label").from(g.V("CustomId1")).to(g.V("CustomId2")).next();
-
-        // This gets the vertices, only.
-        GraphTraversal t = g.V().limit(3).valueMap();
-
-        t.forEachRemaining(
-                e -> System.out.println(e)
-        );
-
+    private static void closeAndExit() {
+        System.out.print(PROMPT + "exiting");
         cluster.close();
+        gremCli.close();
     }
 }
+

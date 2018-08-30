@@ -16,25 +16,8 @@ public class Cli {
         this.options = new Options();
         options.addOption("help", "list available commands and options");
 
-        options.addOption(Option.builder("drop")
-                .desc("drop all the nodes and relationships from the graph")
-                .hasArgs()
-                .numberOfArgs(2)
-                .argName("host> <port")
-                .build());
-
-        options.addOption(Option.builder("import")
-                .desc("populate the graph with some example data")
-                .hasArgs()
-                .numberOfArgs(2)
-                .argName("host> <port")
-                .build());
-
-        options.addOption(Option.builder("codelist")
-                .desc("run the codelist script")
-                .hasArgs()
-                .numberOfArgs(2)
-                .argName("host> <port")
+        options.addOption(Option.builder("query")
+                .desc("run queries against the gremlin server")
                 .build());
 
         this.line = new DefaultParser().parse(options, args);
