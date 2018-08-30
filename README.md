@@ -37,6 +37,7 @@ Gremlin console is a terminal tool which allows you query the database. Follow t
 > https://docs.aws.amazon.com/neptune/latest/userguide/access-graph-gremlin-console.html
 
 ### Install Gremlin server on the EC2 instance
+From your home directory run:
 ```
 wget https://archive.apache.org/dist/tinkerpop/3.3.2/apache-tinkerpop-gremlin-server-3.3.2-bin.zip
 ```
@@ -44,7 +45,7 @@ wget https://archive.apache.org/dist/tinkerpop/3.3.2/apache-tinkerpop-gremlin-se
 unzip apache-tinkerpop-gremlin-server-3.3.2-bin.zip
 ```
 ```bash
-cd apache-tinkerpop-gremlin-console-3.3.2
+cd apache-tinkerpop-gremlin-server-3.3.2
 ```
 Start the server
 ```bash
